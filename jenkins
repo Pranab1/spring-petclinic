@@ -1,0 +1,64 @@
+pipeline {
+  agent any 
+    stages {
+      stage('SCM') {
+        steps {
+           git 'https://github.com/Pranab1/spring-petclinic.git'
+               }
+           }
+      stage('Build') {
+        steps {
+      bat ***
+                mvn install -DskipTests=true
+                
+                
+          ***
+      }
+      }
+      stage('SonarQube') {
+                 steps {
+                        bat ***
+                              
+                      mvn sonar:sonar \        
+                           -Dsonarprojectkey=petclinic \
+                           -Dsonar.host.url=http://localhost:8081 \
+                           -Dsonar.login=
+                           ***
+                         }
+                       }
+      stage('Approval') {
+                 // no agent, so executors are not used up when waiting for approvals
+               agent none 
+               steps {
+                   script {
+                       def deploymentDelay = input id : 'Deploy' message : 'Deploy to Production?' submitter " 'rkvisitto,admin', parameters : [choice(choices: ['0','1','2','3','4','5','6'])]
+                       sleep time : deploymentDelay.toInteger(), unit : 'HOURS'
+                           }
+                      }
+                     }
+      stage('Build images') {
+                steps {
+                  bat ***
+                           cd Users/Pranab/spring-petclinic
+                           docker build -f "Dockerfile" -t pranab/spring-petclinic:latest .
+                       
+                       ***
+                       }
+                 }
+      stage('Push Docker image') {
+                steps {
+                        withDockerRegistry([ credentialId: "Docker_Hub", url: "" ]) {
+                            bat "docker push pranab/spring-petclinic:latest"
+                       }
+             }
+        }
+}     
+                            
+      
+      
+                           
+      
+      
+      
+       
+        
