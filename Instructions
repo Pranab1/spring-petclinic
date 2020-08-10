@@ -1,0 +1,38 @@
+############...........Initial Setup............###############
+# Create EC2 instance for jenkins
+# ubuntu@<ip-address>
+
+
+##########....................................##############
+#install java
+sudo su
+apt-get update -y
+apt install -y default-jdk
+java -version
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+echo $JAVA_HOME
+
+
+
+
+###########...............................###########
+#install maven
+apt install -y maven
+mvn -version
+
+
+
+#########..............................##################
+#setup Jenkins
+#Follow instructions from URL https://pkg.jenkins.io/debian-stable/
+# open jenkins URL and install suggested plug in
+# create a user
+
+
+########................................############
+#install docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker ${USER}
+sudo usermod -aG docker jenkins
+
